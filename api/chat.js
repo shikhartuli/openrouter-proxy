@@ -1,15 +1,14 @@
 // api/chat.js — Vercel Serverless Function (Node runtime)
 
 const ALLOWED_ORIGINS = new Set([
-  "https://<your-user>.github.io",    // your GitHub Pages origin
-  "https://qa-demo.illumia.ai",       // (optional) custom domains you use
+  "https://illumia-ai.github.io",    // your GitHub Pages origin
   "https://illumia.ai"
 ]);
 
 function cors(origin) {
   const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : "";
   return {
-    "Access-Control-Allow-Origin": allowed || "https://<your-user>.github.io",
+    "Access-Control-Allow-Origin": allowed || "https://illumia-ai.github.io",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "content-type, x-client-token",
     "Access-Control-Max-Age": "86400",
@@ -30,18 +29,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  // Optional: simple shared secret
-  // if (req.headers["x-client-token"] !== process.env.CLIENT_TOKEN) {
-  //   Object.entries(headers).forEach(([k, v]) => res.setHeader(k, v));
-  //   return res.status(403).json({ error: "Forbidden" });
-  // }
-
   const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": "https://<your-user>.github.io",
+      "HTTP-Referer": "https://illumia-ai.github.io",
       "X-Title": "Your App Name"
     },
     body: JSON.stringify(req.body || {})
